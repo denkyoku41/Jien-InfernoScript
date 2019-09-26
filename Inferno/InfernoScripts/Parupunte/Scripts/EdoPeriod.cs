@@ -1,6 +1,8 @@
 ﻿using GTA;
 using GTA.Math;
 using GTA.Native;
+using System.Media;
+using System.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +12,17 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("江　戸　時　代", "　現　代　")]
     [ParupunteIsono("えどじだい")]
+    //[ParupunteDebug(true)]
     internal class EdoPeriod : ParupunteScript
     {
         private Random random = new Random();
         private HashSet<int> ninjas = new HashSet<int>();
         private List<Ped> pedList = new List<Ped>();
+        private SoundPlayer soundPlayerStart;
 
         public EdoPeriod(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
+            SetUpSound();
         }
         
         public override void OnStart()
@@ -33,11 +38,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
 
-            foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(core.PlayerPed.Position, 100) && x.IsAlive))
+            foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(core.PlayerPed.Position, 60) && x.IsAlive))
             {
                 pedList.Add(ped);
                 ninjas.Add(ped.Handle);
-                ped.Task.ClearAllImmediately();
                 StartCoroutine(DashCoroutine(ped));
             }
 
@@ -54,6 +58,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 ParupunteEnd();
             });
+
+            soundPlayerStart?.Play();
         }
 
         protected override void OnUpdate()
@@ -64,8 +70,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 pedList.Add(ped);
                 ninjas.Add(ped.Handle);
-                ped.Task.ClearAllImmediately();
+                
                 StartCoroutine(DashCoroutine(ped));
+            }
+
+            foreach (var tarped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive
+                                               && x.IsInRangeOf(core.PlayerPed.Position, 100) &&
+                                               !x.IsInRangeOf(core.PlayerPed.Position, 10) &&
+                                               !ninjas.Contains(x.Handle)))
+            {
+               tarped.Task.ClearAllImmediately();
             }
         }
 
@@ -76,29 +90,49 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private IEnumerable<object> DashCoroutine(Ped ped)
         {
+
             while (!ReduceCounter.IsCompleted)
             {
                 if (!ped.IsSafeExist()) yield break;
-                if (ped.IsDead)
-                {
-                    GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 1.0f, 1.0f);
-                    yield break;
-                }
 
                 if (random.Next(100) < 10)
                 {
                     ped.Quaternion = Quaternion.RotationAxis(ped.UpVector, (float)(random.NextDouble() - 0.5)) * ped.Quaternion;
                 }
 
-                SetAnimRate(ped, 5.0f);
-                Function.Call(Hash.SET_OBJECT_PHYSICS_PARAMS, ped, 200000000.0, 1, 1000, 1, 0, 0, 0, 0, 0,
-                    0, 0);
-                Function.Call(Hash.SET_ACTIVATE_OBJECT_PHYSICS_AS_SOON_AS_IT_IS_UNFROZEN, ped, true);
-                var hp = core.PlayerPed.ForwardVector;
-                Function.Call(Hash.APPLY_FORCE_TO_ENTITY, ped, hp.X * 1, hp.Y * 1, hp.Z * 1, 0, 0, 0, 1, false,
-                    true, true, true, true);
-                Function.Call(Hash.TASK_PLAY_ANIM, ped, "move_m@generic", "sprint", 8.0, -8.0, -1, 9, 0,
-                    0, 0, 0);
+                if (core.PlayerPed.IsInVehicle())
+                {
+                    var targetPos = (core.PlayerPed.ForwardVector).Normalized();
+                    var targetPosition = core.PlayerPed.Position + targetPos * 30;
+                    var tar = targetPosition - ped.Position;
+                    SetAnimRate(ped, 5.0f);
+                    Function.Call(Hash.SET_OBJECT_PHYSICS_PARAMS, ped, 200000000.0, 1, 1000, 1, 0, 0, 0, 0, 0,
+                        0, 0);
+                    Function.Call(Hash.SET_ACTIVATE_OBJECT_PHYSICS_AS_SOON_AS_IT_IS_UNFROZEN, ped, true);
+                    var hp = core.PlayerPed.ForwardVector;
+                    Function.Call(Hash.APPLY_FORCE_TO_ENTITY, ped, hp.X * 1, hp.Y * 1, hp.Z * 1, 0, 0, 0, 1, false,
+                        true, true, true, true);
+                    Function.Call(Hash.TASK_PLAY_ANIM, ped, "move_m@generic", "run_up_slope", 8.0, -8.0, -1, 9, 0,
+                        0, 0, 0);
+                    ped.ApplyForce(new Vector3(tar.X * 3.0f, tar.Y * 3.0f, tar.Z * 3.0f));
+                }
+                else
+                {
+                    var targetPos = (core.PlayerPed.ForwardVector).Normalized();
+                    var targetPosition = core.PlayerPed.Position + targetPos * 10;
+                    var tar = targetPosition - ped.Position;
+                    SetAnimRate(ped, 5.0f);
+                    Function.Call(Hash.SET_OBJECT_PHYSICS_PARAMS, ped, 200000000.0, 1, 1000, 1, 0, 0, 0, 0, 0,
+                        0, 0);
+                    Function.Call(Hash.SET_ACTIVATE_OBJECT_PHYSICS_AS_SOON_AS_IT_IS_UNFROZEN, ped, true);
+                    var hp = core.PlayerPed.ForwardVector;
+                    Function.Call(Hash.APPLY_FORCE_TO_ENTITY, ped, hp.X * 1, hp.Y * 1, hp.Z * 1, 0, 0, 0, 1, false,
+                        true, true, true, true);
+                    Function.Call(Hash.TASK_PLAY_ANIM, ped, "move_m@generic", "run_up_slope", 8.0, -8.0, -1, 9, 0,
+                        0, 0, 0);
+                    ped.ApplyForce(new Vector3(tar.X * 3.0f, tar.Y * 3.0f, tar.Z * 3.0f));
+                }
+
                 StartFire(ped);
 
                 yield return null;
@@ -121,5 +155,30 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_R_Toe0, scale,
                 0, 0, 0);
         }
+
+
+        /// <summary>
+        /// 効果音のロード
+        /// </summary>
+        private void SetUpSound()
+        {
+            var filePaths = LoadWavFiles(@"scripts/InfernoSEs");
+            var setupWav = filePaths.FirstOrDefault(x => x.Contains("Edojidai.wav"));
+            if (setupWav != null)
+            {
+                soundPlayerStart = new SoundPlayer(setupWav);
+            }
+        }
+
+        private string[] LoadWavFiles(string targetPath)
+        {
+            if (!Directory.Exists(targetPath))
+            {
+                return new string[0];
+            }
+
+            return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
+        }
     }
 }
+

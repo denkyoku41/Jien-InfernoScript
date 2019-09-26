@@ -20,7 +20,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             StartCoroutine(SpawnCoroutine());
 
-            ReduceCounter = new ReduceCounter(20000);
+            ReduceCounter = new ReduceCounter(2000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
@@ -60,7 +60,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 ped.MarkAsNoLongerNeeded();
             }
 
-            ped.MaxHealth = 500;
+            ped.MaxHealth = 10000;
             ped.Health = ped.MaxHealth;
 
             var weaponhash = (int)ChaosModeWeapons.GetRandomWeapon();

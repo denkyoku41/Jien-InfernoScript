@@ -12,6 +12,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("エレクトリカルショック", "おわり")]
     [ParupunteIsono("でんき")]
+   // [ParupunteDebug(true)]
     class ElectricalShock : ParupunteScript
     {
         public ElectricalShock(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -20,7 +21,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(20 * 1000);
+            ReduceCounter = new ReduceCounter(10 * 1000);
 
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
@@ -50,7 +51,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         
                         NativeFunctions.ShootSingleBulletBetweenCoords(
                             pos + new Vector3(0, 0, random1) + vec,
-                            ped.GetBoneCoord(Bone.IK_Head), 1, WeaponHash.StunGun, null, 1.0f);
+                            ped.GetBoneCoord(Bone.IK_Head), 1, WeaponHash.StunGun, null, 380.0f);
                     }
                     else
                     {
@@ -58,10 +59,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         var target = bones[Random.Next(0, bones.Length)];
                         NativeFunctions.ShootSingleBulletBetweenCoords(
                                pos + new Vector3(0, 0, random1) + vec,
-                               ped.GetBoneCoord(target), 1, WeaponHash.StunGun, null, 1.0f);
+                               ped.GetBoneCoord(target), 1, WeaponHash.StunGun, null, 380.0f);
                     }
                 }
-                yield return WaitForSeconds(0.7f);
+                yield return WaitForSeconds(1.5f);
             }
         }
     }

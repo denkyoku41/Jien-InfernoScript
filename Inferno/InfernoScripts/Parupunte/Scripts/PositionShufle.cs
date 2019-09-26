@@ -9,6 +9,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("あっちこっち", "おわり")]
     [ParupunteIsono("あっちこっち")]
+    //[ParupunteDebug(true)]
     internal class PositionShufle : ParupunteScript
     {
         private Random random = new Random();
@@ -22,7 +23,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(20 * 1000);
+            ReduceCounter = new ReduceCounter(15 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
@@ -53,9 +54,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 if (peds.Item1 != peds.Item2)
                 {
                     //ポジションの入れ替えは高速コルーチンで実行
-                    _quickCoroutineSystem.AddCoroutine(SwapPedPosition(peds.Item1, peds.Item2));
+                     _quickCoroutineSystem.AddCoroutine(SwapPedPosition(peds.Item1, peds.Item2));
+                   // SwapPedPosition(peds.Item1, peds.Item2);
                 }
-                yield return WaitForSeconds(1.5f);
+                yield return WaitForSeconds(5.0f);
             }
         }
 
@@ -67,10 +69,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var playerPosition = core.PlayerPed.Position;
             var targetGroup = originalGroup.Concat(new[] { core.PlayerPed }).Where(x =>
                  x.IsSafeExist()
-                 && x.IsInRangeOf(playerPosition, 150)
+                 && x.IsInRangeOf(playerPosition, 40)
                  && x.IsAlive).ToArray();
 
-            var p1 = targetGroup[random.Next(0, targetGroup.Length)];
+            // var p1 = targetGroup[random.Next(0, targetGroup.Length)];
+            var p1 = core.PlayerPed;
             var p2 = targetGroup[random.Next(0, targetGroup.Length)];
             return new System.Tuple<Ped, Ped>(p1, p2);
         }

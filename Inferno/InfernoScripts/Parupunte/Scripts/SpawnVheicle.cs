@@ -9,7 +9,8 @@ using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteIsono("くるまついか")]
+    //[ParupunteIsono("くるまついか")]
+    //[ParupunteDebug(true)]
     class SpawnVheicle : ParupunteScript
     {
         private VehicleHash vehicleHash;
@@ -39,12 +40,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnStart()
         {
 
-            var v = GTA.World.CreateVehicle(new Model(vehicleHash), core.PlayerPed.Position + Vector3.WorldUp * 5.0f);
+            var v = GTA.World.CreateVehicle(new Model(vehicleHash), core.PlayerPed.Position + Vector3.WorldUp * 2.0f);
             if (v.IsSafeExist())
             {
                 v.MarkAsNoLongerNeeded();
                 v.FreezePosition = false;
-                v.ApplyForce(Vector3.WorldUp * 5.0f);
+                v.ApplyForce(Vector3.WorldUp * 2.0f);
                 var p = v.CreateRandomPedAsDriver();
                 if(p.IsSafeExist()) p.MarkAsNoLongerNeeded();
             }

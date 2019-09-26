@@ -10,6 +10,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("大量車両ハッキング")]
     [ParupunteIsono("はっきんぐ")]
+    //[ParupunteDebug(true)]
     class MassiveVehicleHack : ParupunteScript
     {
         public MassiveVehicleHack(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -24,11 +25,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(3000);
+            ReduceCounter = new ReduceCounter(15000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
+
                 hacksList = null;
+                if (core.PlayerPed.IsInVehicle())
+                {
+                    core.PlayerPed.CurrentVehicle.IsInvincible = false;
+                }
                 ParupunteEnd();
             });
 
@@ -48,6 +54,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             if (core.PlayerPed.IsInVehicle())
             {
                 hacksList.Add(core.PlayerPed.CurrentVehicle);
+                core.PlayerPed.CurrentVehicle.IsInvincible = true;
             }
             StartCoroutine(HackCoroutine(core.PlayerPed));
             StartCoroutine(HackCoroutine(core.PlayerPed));
@@ -91,19 +98,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             for (var i = 0; i < 10; i++)
             {
                 StartCoroutine(HackCoroutine(target));
-                yield return WaitForSeconds(0.5f);
+                yield return WaitForSeconds(1.0f);
             }
         }
 
         //車両を暴走させるコルーチン
         IEnumerable<object> ControlleCoroutine(Vehicle target)
         {
-            var isBack = Random.Next(0, 100) < 30;
-
-            if (target.IsOnAllWheels && !isBack)
-            {
-                target.Speed *= 2.5f;
-            }
 
             target.EngineRunning = true;
 
@@ -113,7 +114,37 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 target.HandbrakeOn = false;
                 if (target.IsOnAllWheels)
                 {
-                    target.ApplyForce(target.ForwardVector * 4.0f * (isBack ? -1 : 1));
+                    //メイン処理
+                    this.OnUpdateAsObservable
+                    .Where(_ => core.IsGamePadPressed(GameKey.VehicleAccelerate))
+                    .Subscribe(_ =>
+                    {
+                        var targetPos = (core.PlayerPed.ForwardVector).Normalized();
+                        var targetPosition = core.PlayerPed.Position + targetPos * 20;
+                        var direction = targetPosition - core.PlayerPed.Position;
+
+                        target.ApplyForce(direction * 0.1f + new Vector3(0, 0, 0));
+
+                    });
+
+                    this.OnUpdateAsObservable
+                    .Where(_ => core.IsGamePadPressed(GameKey.VehicleBrake))
+                    .Subscribe(_ =>
+                    {
+                        var targetPos = (core.PlayerPed.ForwardVector).Normalized();
+                        var targetPosition = core.PlayerPed.Position + targetPos * 20;
+                        var direction = targetPosition - core.PlayerPed.Position;
+                        target.ApplyForce(-direction  * 0.4f + new Vector3(0, 0, 0));
+
+                    });
+
+                    this.OnUpdateAsObservable
+                       .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
+                        .Subscribe(_ =>
+                        {
+                            target.ApplyForce(new Vector3(0, 0, 2));
+
+                        });
                 }
                 yield return null;
             }

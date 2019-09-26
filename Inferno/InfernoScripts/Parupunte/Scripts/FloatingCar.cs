@@ -35,17 +35,17 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 );
             foreach (var vehicle in targets)
             {
-                vehicle.ApplyForce(Vector3.WorldUp);
+                vehicle.ApplyForce(Vector3.WorldUp * 1.8f);
             }
 
-            if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
-            {
-                var v = player.CurrentVehicle;
-                if (Function.Call<bool>(Hash.IS_VEHICLE_ON_ALL_WHEELS, v))
-                {
-                    v.ApplyForce(Vector3.WorldUp * 1.2f);
-                }
-            }
+            //if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
+            //{
+                //var v = player.CurrentVehicle;
+                //if (Function.Call<bool>(Hash.IS_VEHICLE_ON_ALL_WHEELS, v))
+                //{
+                    //v.ApplyForce(Vector3.WorldUp * 1.1f);
+                //}
+            //}
         }
     }
 }

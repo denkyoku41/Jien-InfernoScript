@@ -6,6 +6,7 @@ using UniRx;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("エンジンパワーアップ")]
+    //[ParupunteDebug(true)]
     internal class VehicleEnginePowerUp : ParupunteScript
     {
         public VehicleEnginePowerUp(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -18,12 +19,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            foreach (var v in core.CachedVehicles.Where(
-                x => x.IsSafeExist() && x.IsAlive))
-            {
-                v.EnginePowerMultiplier = 200.0f;
-                v.EngineTorqueMultiplier = 200.0f;
-            }
+            var v = core.PlayerPed.CurrentVehicle;
+                v.EnginePowerMultiplier = 10000.0f;
+                v.EngineTorqueMultiplier =50000.0f;
+                v.Health = 300;
+
+             //   v.Speed = 100.0f;
+            
 
             ParupunteEnd();
         }

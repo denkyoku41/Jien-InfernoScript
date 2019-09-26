@@ -7,10 +7,12 @@ using GTA;
 using GTA.Math;
 using GTA.Native;
 using UniRx;
+
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteConfigAttribute("ケツファンネル", "弾切れ")]
-    [ParupunteIsono("けつふぁんねる")]
+    [ParupunteConfigAttribute("ケツファンネル", "おわり")]
+    [ParupunteIsono("けつふぁん")]
+   // [ParupunteDebug(true)]
     class KetsuFunnel : ParupunteScript
     {
         public KetsuFunnel(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -20,43 +22,57 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnStart()
         {
             ReduceCounter = new ReduceCounter(15 * 1000);
+            core.PlayerPed.IsInvincible = true;
             AddProgressBar(ReduceCounter);
-            ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
+            ReduceCounter.OnFinishedAsync.Subscribe(_ =>
+            {
+                WaitForSeconds(3.0f);
+                core.PlayerPed.IsInvincible = false;
+                ParupunteEnd();
+            });
 
-            core.PlayerPed.IsExplosionProof = true;
-            this.OnFinishedAsObservable
-                .Subscribe(_ => core.PlayerPed.IsExplosionProof = false);
-            StartCoroutine(KetuCoroutine());
+            StartCoroutine(ElectricalCoroutine());
         }
 
-        private IEnumerable<object> KetuCoroutine()
+
+
+        IEnumerable<object> ElectricalCoroutine()
         {
+            var pos = core.PlayerPed.Position;
             while (IsActive)
             {
-                if (!core.PlayerPed.IsInVehicle())
+                pos = core.PlayerPed.Position;
+                var bones = new[] { Bone.IK_Head, Bone.IK_L_Foot, Bone.IK_L_Hand, Bone.IK_R_Foot, Bone.IK_R_Hand };
+                foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(pos, 30)))
                 {
-                    var playerPos = core.PlayerPed.Position;
+                    var vec = (ped.Position - pos).Normalized;
+                    var random1 = (float)Random.NextDouble() / 2.0f;
 
-                    var ketsuDir = -core.PlayerPed.ForwardVector;
+                    if (ped.IsInVehicle())
+                    {
 
-                    var targetList = core
-                        .CachedPeds.Cast<Entity>().Concat(core.CachedVehicles)
-                        .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(playerPos, 100))
-                        .Where(x => Vector3.Angle(ketsuDir, x.Position - playerPos) < 30);
+                        NativeFunctions.ShootSingleBulletBetweenCoords(
+                            pos + new Vector3(0, 0, random1) + vec,
+                            ped.GetBoneCoord(Bone.IK_Head), 1, WeaponHash.RPG,null, 200.0f);
+                    }
+                    else
+                    {
+                        //適当な体の部位に向かって撃つ
+                        var target = bones[Random.Next(0, bones.Length)];
+                        NativeFunctions.ShootSingleBulletBetweenCoords(
+                               pos + new Vector3(0, 0, random1) + vec,
+                               ped.GetBoneCoord(target), 1, WeaponHash.RPG, null, 200.0f);
+                    }
 
-                    var target = targetList.ElementAt(Random.Next(targetList.Count()));
-
-                    var startPoint = core.PlayerPed.GetBoneCoord(Bone.SKEL_Pelvis);
-
-                    var dir = (target.Position - startPoint).Normalized;
-
-                    NativeFunctions.ShootSingleBulletBetweenCoords(
-                        startPoint + dir * 1, target.Position, 100, WeaponHash.RPG, null, 500);
+                    if (core.PlayerPed.IsDead)
+                    {
+                        ParupunteEnd();
+                    }
+                    
                 }
-                yield return WaitForSeconds(0.4f);
+                yield return WaitForSeconds(0.7f);
             }
         }
-
     }
 }

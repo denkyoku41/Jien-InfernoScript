@@ -6,8 +6,8 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteConfigAttribute("ば・く・は・つ・し・た・い！", "ば・く・は・つ・し・な・い")]
-    [ParupunteIsono("ばくはつしたい")]
+    //[ParupunteConfigAttribute("ば・く・は・つ・し・た・い！", "ば・く・は・つ・し・な・い")]
+    //[ParupunteIsono("ばくはつしたい")]
     internal class ExplodeDeadBodies : ParupunteScript
     {
         private HashSet<int> explodedPedHandles;
@@ -22,7 +22,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(20000);
+            ReduceCounter = new ReduceCounter(1000);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             AddProgressBar(ReduceCounter);
             explodedPedHandles = new HashSet<int>();

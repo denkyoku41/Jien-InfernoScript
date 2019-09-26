@@ -19,7 +19,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private IEnumerable<object> SpawnCharacter()
         {
-            foreach (var s in WaitForSeconds(2))
+            foreach (var s in WaitForSeconds(1))
             {
                 Spawn();
                 Spawn();

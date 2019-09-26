@@ -8,6 +8,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("テンペスト")]
     [ParupunteIsono("てんぺすと")]
+    //[ParupunteDebug(true)]
     internal class Tempest : ParupunteScript
     {
         private HashSet<Entity> entityList = new HashSet<Entity>();
@@ -22,22 +23,22 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         protected override void OnFinished()
         {
-            GTA.World.Weather = Weather.Clear;
+            core.PlayerPed.IsInvincible = false;
         }
 
         public override void OnStart()
         {
-            GTA.World.Weather = Weather.ThunderStorm;
             ReduceCounter = new ReduceCounter(15 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
+            core.PlayerPed.IsInvincible = true;
         }
 
         protected override void OnUpdate()
         {
             var playerPos = core.PlayerPed.Position;
             foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist()
-            && x.IsInRangeOf(playerPos, 20)
+            && x.IsInRangeOf(playerPos, 100)
             && !entityList.Contains(x)
             && !x.IsCutsceneOnlyPed()))
             {
@@ -47,7 +48,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             }
             foreach (var veh in core.CachedVehicles.Where(x => x.IsSafeExist()
-            && x.IsInRangeOf(playerPos, 20)
+            && x.IsInRangeOf(playerPos, 100)
             && !entityList.Contains(x)
             ))
             {
@@ -68,26 +69,38 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 if (entity is Ped)
                 {
                     var p = entity as Ped;
-                    if (p.IsDead) yield break;
+                    p.IsInvincible = true;
                     p.SetToRagdoll();
                 }
 
-                var playerPos = core.PlayerPed.Position;
+                var targetPos = (core.PlayerPed.ForwardVector).Normalized();
+
+                    var playerPos = core.PlayerPed.Position + new Vector3(0, 0, 5) + targetPos * 40;
+                    var gotoPlayerVector = (playerPos - entity.Position).Normalized();
+                    var lenght = gotoPlayerVector.Length();
+
+                    var angle = 50;
+                    var rotatedVector = Quaternion.RotationAxis(Vector3.WorldUp, angle)
+                        .ApplyVector(gotoPlayerVector);
+
+                    entity.ApplyForce(gotoPlayerVector * 90);
+
+                    var mainPower = entity is Ped ? 60 : 50;
+                    var upPower = entity is Ped ? 20 : 10;
+                    entity.ApplyForce(rotatedVector * mainPower + Vector3.WorldUp * upPower);
+
                 //プレイヤに向かうベクトル
-                var gotoPlayerVector = playerPos - entity.Position;
-                var lenght = gotoPlayerVector.Length();
-                gotoPlayerVector.Normalize();
 
-                var angle = lenght > 10 ? 89.2f : 90;
-                var rotatedVector = Quaternion.RotationAxis(Vector3.WorldUp, angle)
-                    .ApplyVector(gotoPlayerVector);
-
-                var mainPower = entity is Ped ? 5 : 2;
-                var upPower = entity is Ped ? 3 : 1.2f;
-                entity.ApplyForce(rotatedVector * mainPower + Vector3.WorldUp * upPower);
 
                 yield return null;
             }
+
+            if (entity is Ped)
+            {
+                var p = entity as Ped;
+                p.IsInvincible = false;
+            }
+
         }
     }
 }

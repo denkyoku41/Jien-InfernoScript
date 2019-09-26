@@ -29,10 +29,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private Tuple<Vehicle, Ped> SpawnAirPlane()
         {
             var model = new Model(VehicleHash.Velum2);
-            var plane = GTA.World.CreateVehicle(model, core.PlayerPed.Position + new Vector3(0, -400, 150));
+            var plane = GTA.World.CreateVehicle(model, core.PlayerPed.Position + new Vector3(0, -20, 30));
             if (!plane.IsSafeExist()) return null;
             plane.PetrolTankHealth = 100;
-            plane.Speed = 50;
+            plane.Speed = 10;
 
             //パイロットのラマー召喚
             var ped = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.LamarDavis));
@@ -62,8 +62,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 yield break;
             }
 
-            //20秒間運転したら自動的に投棄
-            foreach (var x in WaitForSeconds(20))
+            //1秒間運転したら自動的に投棄
+            foreach (var x in WaitForSeconds(1))
             {
                 if (!ped.IsSafeExist() || !plane.IsSafeExist() || plane.IsDead)
                 {

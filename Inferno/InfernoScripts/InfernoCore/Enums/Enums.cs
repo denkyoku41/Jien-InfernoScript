@@ -2,12 +2,14 @@
 {
     public enum GameKey
     {
+        LButton = 1,
         EnterCar = 23,
-        Sprint = 21,
-        Jump = 22,
+        Sprint = 21,　//Shift
+        Jump = 22, 
         Reload = 45,
         SeekCover = 44,
         Attack = 24,
+        Space = 32,
         ChangeWeapon = 37,
         Aim = 25,
         LookBehind = 26,
@@ -15,20 +17,23 @@
         Cover = 44,
         VehicleAim = 68,
         VehicleAttack = 69,
-        VehicleAccelerate = 71,
-        VehicleBrake = 72,
-        VehicleDuck = 73,
-        VehicleExit = 75,
+        VehicleAccelerate = 71, //W
+        VehicleBrake = 72,//S
+        VehicleDuck = 73, //X
+        VehicleExit = 75, //F
         VehicleHandbrake = 76,
         VehicleHorn = 86,
         VehicleLookBehind = 79,
-        LX = 30,
+        X = 88,
+        S = 83,
+        // E = 69,
+        LX = 30, //D
         LY = 31,
         LStickUp = 32,
         LStickDown = 33,
         LStickLeft = 34,
         LStickRight = 35,
-        RX = 1,
+        RX = 1, //A
         RY = 2,
         RStickUp = 3,
         RStickDown = 4,
@@ -207,6 +212,21 @@
         FLARE = -1330848211,
     }
 
+    public enum CameraShake
+    {
+        Hand = 0,
+        SmallExplosion = 1,
+        MediumExplosion = 2,
+        LargeExplosion = 3,
+        Jolt = 4,
+        Vibrate = 5,
+        RoadVibration = 6,
+        Drunk = 7,
+        SkyDiving = 8,
+        FamilyDrugTrip = 9,
+        DeathFail = 10
+    }
+
     /// <summary>
     /// ミッションキャラの扱い
     /// </summary>
@@ -343,5 +363,16 @@
         WadeCutscene = 0xD266D9D6,
         WeiChengCutscene = 0x30DB9D7B,
         ZimborCutscene = 0xEAACAAF0,
+        a_c_mtlion = 0x1250D7BA,
+    }
+
+    public enum AnimalHash : uint
+    {
+        a_c_mtlion = 0x1250D7BA,
+        s_m_m_movalien_01 = 0x64611296,
+        a_c_cow = 0xFCFA9E1E,
+        a_c_boar = 0xCE5FF074,
+        cs_bradcadaver = 0x7228AF60,
+
     }
 }

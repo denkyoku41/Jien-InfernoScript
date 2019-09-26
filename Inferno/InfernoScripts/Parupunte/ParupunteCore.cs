@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -110,8 +113,9 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Where(_ => IsActive)
                 .Subscribe(_ => ParupunteStop());
 
-            OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0)
-                .ThrottleFirst(TimeSpan.FromSeconds(2f), InfernoScriptScheduler)
+
+            OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad1)
+                .ThrottleFirst(TimeSpan.FromSeconds(0.5f), InfernoScriptScheduler)
                 .Subscribe(_ =>
                 {
                     if (IsActive)
@@ -122,7 +126,7 @@ namespace Inferno.InfernoScripts.Parupunte
                     {
                         ParupunteStart(ChooseParupounteScript());
                     }
-                    
+
                 });
 
             //パルプンテが停止したタイミングで開放
@@ -146,7 +150,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Subscribe(c =>
                 {
                     var r = IsonoMethod(c.Command);
-                    if (r) nextIsonoTime = Time.Add(TimeSpan.FromSeconds(4));
+                    if (r) nextIsonoTime = Time.Add(TimeSpan.FromSeconds(1));
                 });
 
             #endregion EventHook
@@ -229,10 +233,10 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             var c = command;
 
-            if (c.Contains("とまれ"))
+            if (c.Contains("０"))
             {
-                      ParupunteStop();
-                      return true;
+                       ParupunteStop();
+                       return true;
             }
 
             if (IsActive) return false;
@@ -284,7 +288,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private void ParupunteStop()
         {
-            DrawText("Parupunte:Abort");
+            DrawText("Parupunte:Stop");
             IsActive = false;
         }
 
@@ -332,7 +336,8 @@ namespace Inferno.InfernoScripts.Parupunte
 
             //名前を出してスタート
             StartCoroutine(ParupunteDrawCoroutine(GetPlayerName() + "はパルプンテを唱えた!", script.Name));
-            yield return WaitForSeconds(2);
+            yield return WaitForSeconds(1);
+            //yield return WaitForSeconds(2);
 
             try
             {
@@ -392,10 +397,12 @@ namespace Inferno.InfernoScripts.Parupunte
         private IEnumerable<object> ParupunteDrawCoroutine(string callString, string scriptname)
         {
             //○はパルプンテを唱えた！の部分
-            timerText.Set(CreateMainText(callString), 2.0f);
+            timerText.Set(CreateMainText(callString), 1.0f);
+           // timerText.Set(CreateMainText(callString), 2.0f);
 
-            //2秒画面に出す
-            yield return WaitForSeconds(2);
+            //1秒画面に出す
+            yield return WaitForSeconds(1);
+           // yield return WaitForSeconds(2);
 
             //効果名
             timerText.Set(CreateMainText(scriptname), 3.0f);

@@ -12,6 +12,7 @@ using UniRx;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("けものふれんず")]
+    //[ParupunteDebug(true)]
     class BeastFriends : ParupunteScript
     {
         private PedHash[] _animalsHash;
@@ -102,7 +103,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var centerPos = core.PlayerPed.Position;
 
                 var targetVehs = core.CachedVehicles.Where(x =>
-                x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(centerPos, 30) && !_setEntities.Contains(x.Handle) && !x.Driver.IsSafeExist());
+                x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(centerPos, 20) && !_setEntities.Contains(x.Handle) && !x.Driver.IsSafeExist());
 
                 foreach (var veh in targetVehs)
                 {
@@ -112,6 +113,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                         var seat = new[] { VehicleSeat.Driver, VehicleSeat.Passenger, VehicleSeat.RightRear, VehicleSeat.LeftRear }[i];
                         var animal = veh.CreatePedOnSeat(seat, m);
+                        
 
                         if (!animal.IsSafeExist()) continue;
 
@@ -125,7 +127,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     }
                     yield return null;
                 }
-                yield return WaitForSeconds(0.2f);
+                yield return WaitForSeconds(3.0f);
             }
         }
 
@@ -157,7 +159,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     }
                     yield return null;
                 }
-                yield return WaitForSeconds(0.25f);
+                yield return WaitForSeconds(3.0f);
             }
         }
 
@@ -171,7 +173,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             if (!targetPed.IsInVehicle())
             {
                 var pos = targetPed.Position;
-                var spawnPosition = pos.AroundRandom2D(2 + (float)Random.NextDouble() * 15.0f);
+                // var spawnPosition = pos.AroundRandom2D(2 + (float)Random.NextDouble() * 5.0f);
+                var spawnPosition = pos.AroundRandom2D(10);
                 return GTA.World.CreatePed(m, spawnPosition);
             }
             else

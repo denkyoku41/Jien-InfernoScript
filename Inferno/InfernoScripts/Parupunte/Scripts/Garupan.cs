@@ -10,6 +10,7 @@ using UniRx;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("がるぱん")]
+    //[ParupunteDebug(true)]
     class Garupan : ParupunteScript
     {
         enum PlanType
@@ -33,8 +34,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             switch (planType)
             {
-                case PlanType.Kosokoso:
-                    _name = "こそこそ作戦、開始です！";
+               case PlanType.Kosokoso:
+                   _name = "こそこそ作戦、開始です！";
                     break;
                 case PlanType.Kottsun:
                     _name = "こっつん作戦、開始です！";
@@ -81,6 +82,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             this.OnFinishedAsObservable
                 .Subscribe(_ =>
                 {
+                    core.PlayerPed.IsInvincible = false;
+                    core.PlayerPed.CurrentVehicle.IsCollisionProof = false;
                     foreach (var t in resources)
                     {
                         if (t.IsSafeExist())
@@ -95,18 +98,23 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         #region こそこそ作戦
         private void StartKosokoso()
         {
-            ReduceCounter = new ReduceCounter(25 * 1000);
+            ReduceCounter = new ReduceCounter(8 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
+          //  core.PlayerPed.IsInvincible = true;
+            core.PlayerPed.CurrentVehicle.IsCollisionProof = true;
             //戦車を遠目にたくさん配置して、遭遇したら攻撃してくる
-            foreach (var i in Enumerable.Range(0, 12))
+            foreach (var i in Enumerable.Range(0, 2))
             {
-                //遠目につくる
-                var vp = SpawnTank(Random.Next(100, 200));
-                if (vp == null) continue;
+
+                var ppos = core.PlayerPed.Position;
+                var targetPos = (core.PlayerPed.ForwardVector).Normalized();
+
+                var vp = SpawnTank(ppos + targetPos * 10);
+             //   if (vp == null) continue;
                 var ped = vp.Item2;
-                ped.Task.FightAgainst(core.PlayerPed);
+               // ped.Task.FightAgainst(core.PlayerPed);
                 var tank = vp.Item1;
                 resources.Add(tank);
                 resources.Add(ped);
@@ -123,7 +131,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         void KottsunStart()
         {
             //ニトロで挟んで圧死させる
-            ReduceCounter = new ReduceCounter(6 * 1000);
+            ReduceCounter = new ReduceCounter(3 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             StartCoroutine(KottsunTankCoroutine(true));
@@ -135,6 +143,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             //遠目につくる
             var ppos = core.PlayerPed.Position;
+
             var vp = SpawnTank(ppos + new Vector3(0, isForward ? -30 : 30, 0));
             if (vp == null) ParupunteEnd();
             var ped = vp.Item2;
@@ -148,7 +157,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 .Where(_ => tank.IsSafeExist() && tank.IsAlive)
                 .Subscribe(_ => tank.PetrolTankHealth = -1);
 
-            yield return WaitForSeconds(3);
+            yield return WaitForSeconds(2);
             if (!tank.IsSafeExist()) yield break;
             //演出用
             Function.Call(Hash.ADD_EXPLOSION, tank.Position.X, tank.Position.Y, tank.Position.Z, -1, 0.0f, true, false, 0.1f);
@@ -157,7 +166,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             yield return WaitForSeconds(2);
             if (ped.IsSafeExist())
             {
-                ped.Task.FightAgainst(core.PlayerPed);
+              //  ped.Task.FightAgainst(core.PlayerPed);
             }
         }
         #endregion

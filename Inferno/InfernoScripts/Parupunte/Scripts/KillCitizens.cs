@@ -4,8 +4,9 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteConfigAttribute("周辺市民全員即死")]
-    [ParupunteIsono("みんなばくはつ")]
+    [ParupunteConfigAttribute("み・ん・な・ば・く・は・つ・し・た・い！")]
+    [ParupunteIsono("ばくはつ")]
+    //[ParupunteDebug(true)]
     internal class KillCitizens : ParupunteScript
     {
         public KillCitizens(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -37,6 +38,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var peds = core.CachedPeds.Where(x => x.IsSafeExist()
                                                && !x.IsSameEntity(core.PlayerPed)
                                                && !x.IsRequiredForMission()
+                                               || x.IsDead
                                                && x.IsInRangeOf(player.Position, radius)).ToList();
             while (peds.Count > 0)//一気に数十個も同時に爆発を起こせないので時間差で行う
             {
@@ -44,7 +46,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 foreach (var ped in removePedList)
                 {
                     ped.Kill();
-                    GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
+                    GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.GasTank, 4.0f, 2.5f);
                 }
 
                 peds.RemoveAll(removePedList.Contains);
