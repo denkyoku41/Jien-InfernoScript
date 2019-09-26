@@ -18,5 +18,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             Game.Player.Money += 20000;
             ParupunteEnd();
         }
+
+
     }
+
 }

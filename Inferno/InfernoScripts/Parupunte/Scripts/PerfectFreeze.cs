@@ -8,6 +8,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("パーフェクトフリーズ", "おわり")]
     [ParupunteIsono("ぱーふぇくとふりーず")]
+    //[ParupunteDebug(true)]
     class PerfectFreeze : ParupunteScript
     {
         public PerfectFreeze(ParupunteCore core, ParupunteConfigElement element) : base(core, element)

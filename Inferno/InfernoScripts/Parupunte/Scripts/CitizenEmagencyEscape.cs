@@ -29,11 +29,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     && x.IsInRangeOf(playerPos, 100)
                 ))
             {
-                var car = ped.CurrentVehicle;
-                if (car.IsSafeExist() && car.PetrolTankHealth > 0 && !car.IsRequiredForMission())
-                {
-                    car.PetrolTankHealth = -700;
-                }
+
                 EscapeVehicle(ped);
             }
 
@@ -70,7 +66,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         IEnumerable<object> DelayFinished()
         {
-            yield return WaitForSeconds(7);
+            yield return WaitForSeconds(2);
             ParupunteEnd();
         }
     }

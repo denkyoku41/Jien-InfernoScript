@@ -8,6 +8,7 @@ using UniRx;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("てきとうにしょうかん")]
+    //[ParupunteDebug(true)]
     internal class SpawnCharacters : ParupunteScript
     {
         private Model pedModel;
@@ -27,7 +28,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             random = new Random();
 
-            switch (random.Next(0, 100) % 11)
+            switch (random.Next(0, 100) % 15)
             {
                 case 0:
                     pedModel = new Model(PedHash.LamarDavis);
@@ -60,13 +61,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     break;
 
                 case 6:
-                    pedModel = new Model(PedHash.Zombie01);
-                    name = "ウォーキング・デッド";
+                    pedModel = new Model(PedHash.JimmyDisanto);
+                    name = "ジミーを怯えさせた";
                     break;
 
                 case 7:
-                    pedModel = new Model(PedHash.RsRanger01AMO);
-                    name = "それは外宇宙からやってきた";
+                    pedModel = new Model(PedHash.Solomon);
+                    name = "メルトダウン";
                     break;
 
                 case 8:
@@ -75,14 +76,35 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     break;
 
                 case 9:
-                    pedModel = new Model(PedHash.MovAlien01);
-		            name = "ロスサントス決戦";
+                    pedModel = new Model(PedHash.MrKCutscene);
+		            name = "ミスターK";
                     break;
 
                 case 10:
-                    pedModel = new Model(PedHash.Clown01SMY);
-	                name = "らんらんる～";
+                    pedModel = new Model(PedHash.AmandaTownley);
+	                name = "ナマステ　アマンダ";
                     break;
+
+                case 11:
+                    pedModel = new Model(PedHash.TracyDisanto);
+                    name = "娘のために";
+                    break;
+
+                case 12:
+                    pedModel = new Model(PedHash.TaoCheng);
+                    name = "来来来～";
+                    break;
+
+                case 13:
+                    pedModel = new Model(PedHash.KarenDaniels);
+                    name = "でーと　を　だいなし　にした";
+                    break;
+
+                case 14:
+                    pedModel = new Model(PedHash.Stretch);
+                    name = "やわらかストレッチ";
+                    break;
+
             }
         }
 

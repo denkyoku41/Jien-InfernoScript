@@ -17,7 +17,7 @@ namespace Inferno
         public override bool Validate()
         {
             //AirPlaneの数は1～30の範囲である
-            if (AirPlaneCount <= 0 || AirPlaneCount > 30) return false;
+            if (AirPlaneCount <= 0 || AirPlaneCount > 500) return false;
 
             return true;
         }
@@ -41,7 +41,7 @@ namespace Inferno
         protected override void Setup()
         {
             config = LoadConfig<ChaosAirPlaneConfig>();
-            CreateInputKeywordAsObservable("abomb")
+            CreateInputKeywordAsObservable("cair")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

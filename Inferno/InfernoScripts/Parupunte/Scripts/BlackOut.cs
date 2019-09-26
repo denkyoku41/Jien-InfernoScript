@@ -11,8 +11,9 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteConfigAttribute("ctOS 停電", "ctOS 復旧")]
+    [ParupunteConfigAttribute("ctOS 停電", "")]
     [ParupunteIsono("ていでん")]
+    //[ParupunteDebug(true)]
     class BlackOut : ParupunteScript
     {
         private SoundPlayer soundPlayerStart;
@@ -27,41 +28,17 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(20 * 1000);
-            AddProgressBar(ReduceCounter);
-            ReduceCounter.OnFinishedAsync.Subscribe(_ =>
-            {
-                StartCoroutine(BlackOutEnd());
-            });
 
             StartCoroutine(BlackOutStart());
-            this.OnFinishedAsObservable
-                .Subscribe(_ =>
-                {
-                    GTA.World.SetBlackout(false);
-                    soundPlayerStart = null;
-                    soundPlayerEnd = null;
-                    drawingDisposable?.Dispose();
-                });
-
-            //周辺車両をエンストさせる
-            this.OnUpdateAsObservable
-                .Subscribe(_ =>
-                {
-                    var playerPos = core.PlayerPed.Position;
-                    var playerVehicle = core.GetPlayerVehicle();
-                    foreach (var v in core.CachedVehicles.Where(
-                        x => x.IsSafeExist()
-                        && x.IsInRangeOf(playerPos, 1000)
-                        && x.IsAlive
-                        && x != playerVehicle))
-                    {
-                        v.EngineRunning = false;
-                        v.EnginePowerMultiplier = 0.0f;
-                        v.EngineTorqueMultiplier = 0.0f;
-
-                    }
-                });
+          //  this.OnFinishedAsObservable
+            //    .Subscribe(_ =>
+             //   {
+              //      GTA.World.SetBlackout(false);
+              //      soundPlayerStart = null;
+              //      soundPlayerEnd = null;
+              //      drawingDisposable?.Dispose();
+              //  });
+        
         }
 
 
@@ -83,12 +60,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 yield return null;
             }
             GTA.World.SetBlackout(true);
-        }
-
-        private IEnumerable<object> BlackOutEnd()
-        {
-            soundPlayerEnd?.Play();
-            yield return WaitForSeconds(1);
             ParupunteEnd();
         }
 

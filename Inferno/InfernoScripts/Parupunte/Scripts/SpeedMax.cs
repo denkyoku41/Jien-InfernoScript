@@ -17,7 +17,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(30 * 1000);
+            ReduceCounter = new ReduceCounter(20 * 1000);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             AddProgressBar(ReduceCounter);
         }

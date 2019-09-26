@@ -10,6 +10,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("参　勤　交　代", "大　政　奉　還")]
     [ParupunteIsono("さんきんこうたい")]
+    //[ParupunteDebug(true)]
     class MultiLeggedRace : ParupunteScript
     {
         public MultiLeggedRace(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -41,6 +42,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Grenade, 1.0f, 0.0f);
                     ped.Kill();
                 }
+                
                 ParupunteEnd();
             });
 
@@ -152,6 +154,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_dst_elec_fire",
                 ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_R_Toe0, scale,
                 0, 0, 0);
+
         }
     }
 }

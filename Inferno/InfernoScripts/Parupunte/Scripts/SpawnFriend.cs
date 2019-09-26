@@ -10,8 +10,9 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteConfigAttribute("味方召喚", "定時なんで帰ります")]
-    [ParupunteIsono("みかたしょうかん")]
+    [ParupunteConfigAttribute("味方召喚")]
+    [ParupunteIsono("みかた")]
+    //[ParupunteDebug(true)]
     class SpawnFriend :ParupunteScript
     {
         private List<Ped> pedList = new List<Ped>(); 
@@ -21,34 +22,19 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(20 * 1000);
-            AddProgressBar(ReduceCounter);
             foreach (var i in Enumerable.Range(0,4))
             {
                 pedList.Add(CreateFriend());
             }
 
-            ReduceCounter.OnFinishedAsync.Subscribe(_ =>
-            {
-                ParupunteEnd();
-            });
 
-            this.OnUpdateAsObservable
-                .Where(_ => core.PlayerPed.IsDead)
-                .FirstOrDefault()
-                .Subscribe(_ =>
-                {
-                    ParupunteEnd();
-                });
+            ParupunteEnd();
+               
         }
 
         protected override void OnFinished()
         {
-            foreach (var ped in pedList.Where(ped => ped.IsSafeExist()))
-            {
-                ped.SetNotChaosPed(false);
-                ped.MarkAsNoLongerNeeded();
-            }
+
         }
 
         private Ped CreateFriend()

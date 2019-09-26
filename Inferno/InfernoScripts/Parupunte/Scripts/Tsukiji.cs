@@ -8,6 +8,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("あぁ^～築地が漁業するんじゃぁ^～", "大漁")]
     [ParupunteIsono("つきじ")]
+    //[ParupunteDebug(true)]
     internal class Tsukiji : ParupunteScript
     {
         private HashSet<Vehicle> vehicleList = new HashSet<Vehicle>();
@@ -29,7 +30,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var playerViecle = player.CurrentVehicle;
             var targets = core.CachedVehicles
                 .Where(x => x.IsSafeExist()
-                            && x.IsInRangeOf(player.Position, 30.0f)
+                            && x.IsInRangeOf(player.Position, 70.0f)
                             && x != playerViecle
                 );
 

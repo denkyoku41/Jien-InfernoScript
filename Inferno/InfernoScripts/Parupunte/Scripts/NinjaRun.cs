@@ -10,6 +10,7 @@ namespace Inferno
 {
     [ParupunteConfigAttribute("バリキ・ジツ", "もうオシマイだ！")]
     [ParupunteIsono("ばりきじつ")]
+    //[ParupunteDebug(true)]
     internal class NinjaRun : ParupunteScript
     {
         private float addSpeed = 1.0f;
@@ -30,7 +31,7 @@ namespace Inferno
         public override void OnStart()
         {
             var ptfxName = "core";
-
+            Random random = new Random();
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
             {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
@@ -51,9 +52,9 @@ namespace Inferno
                         true, true, true, true);
                     Function.Call(Hash.TASK_PLAY_ANIM, core.PlayerPed, "move_m@generic", "sprint", 8.0, -8.0, -1, 9, 0,
                         0, 0, 0);
-                    
+
                     //徐々に加速
-                    addSpeed *= 1.05f;
+                    addSpeed *= 1.5f;
                     addSpeed = Math.Min(5, addSpeed);
                 });
 

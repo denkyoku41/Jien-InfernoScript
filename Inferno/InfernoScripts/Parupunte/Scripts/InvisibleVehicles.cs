@@ -1,9 +1,12 @@
-﻿using System.Linq;
+﻿using GTA;
+using System.Linq;
 using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("光学迷彩(車両)")]
+    [ParupunteIsono("とうめいか")]
+    //[ParupunteDebug(true)]
     internal class InvisibleVehicles : ParupunteScript
     {
         public InvisibleVehicles(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -34,8 +37,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             if (player.IsInVehicle())
             {
-                player.CurrentVehicle.IsVisible = false;
-                player.IsVisible = true;
+                 player.CurrentVehicle.IsVisible = false;
+                 player.IsVisible = true;
+                
             }
         }
     }
